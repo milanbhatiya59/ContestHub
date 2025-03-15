@@ -5,15 +5,15 @@ const getPlatformIcon = (platform) => {
   switch (platform) {
     case "CodeChef":
       return (
-        <SiCodechef className="text-2xl text-orange-600 dark:text-orange-400" />
+        <SiCodechef className="text-lg sm:text-xl text-orange-500 dark:text-orange-400" />
       );
     case "Codeforces":
       return (
-        <SiCodeforces className="text-2xl text-blue-600 dark:text-blue-400" />
+        <SiCodeforces className="text-lg sm:text-xl text-blue-500 dark:text-blue-400" />
       );
     case "LeetCode":
       return (
-        <SiLeetcode className="text-2xl text-yellow-600 dark:text-yellow-400" />
+        <SiLeetcode className="text-lg sm:text-xl text-yellow-500 dark:text-yellow-400" />
       );
     default:
       return <span className="text-gray-900 dark:text-white">{platform}</span>;
@@ -31,13 +31,20 @@ const getTimeRemaining = (start_time) => {
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-  if (days > 0) {
-    return `${days}d ${hours}h ${minutes}m`;
-  } else if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  } else {
-    return `${minutes}m`;
-  }
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+};
+
+const formatDuration = (duration) => {
+  const hours = Math.floor(duration / 60);
+  const minutes = duration % 60;
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+};
+
+// Truncate contest name if it's too long (max 40 characters)
+const truncateText = (text, length = 40) => {
+  return text.length > length ? `${text.substring(0, length)}...` : text;
 };
 
 const UpcomingContestCard = ({ platform, name, start_time, duration }) => {
@@ -48,20 +55,30 @@ const UpcomingContestCard = ({ platform, name, start_time, duration }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(getTimeRemaining(start_time));
-    }, 60000); // Update every minute
-
-    return () => clearInterval(interval); // Cleanup on unmount
+    }, 60000);
+    return () => clearInterval(interval);
   }, [start_time]);
 
   return (
     <tr className="border-b border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
-      <td className="p-4 flex items-center space-x-3">
+      {/* Contest Name (with Platform Icon) */}
+      <td className="p-3 sm:p-4 flex items-center space-x-2 w-full">
         {getPlatformIcon(platform)}
-        <span className="font-medium">{name}</span>
+        <span className="font-medium">{truncateText(name)}</span>
       </td>
-      <td className="p-4">{start_time}</td>
-      <td className="p-4">{duration} min</td>
-      <td className="p-4 font-semibold">{timeRemaining}</td>
+
+      {/* Start Time */}
+      <td className="p-3 sm:p-4 w-[25%]">{start_time}</td>
+
+      {/* Duration (Reduced width) */}
+      <td className="p-3 sm:p-4 w-[15%] text-center">
+        {formatDuration(duration)}
+      </td>
+
+      {/* Time Remaining (Reduced width) */}
+      <td className="p-3 sm:p-4 w-[15%] text-center font-semibold">
+        {timeRemaining}
+      </td>
     </tr>
   );
 };
