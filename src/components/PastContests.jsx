@@ -47,6 +47,7 @@ const PastContests = () => {
     const fetchPastContests = async () => {
       try {
         const contestData = await getPastContests();
+        console.log(contestData);
         setContests(contestData);
         const uniquePlatforms = [
           ...new Set(contestData.map((contest) => contest.platform)),

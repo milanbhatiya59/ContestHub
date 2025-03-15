@@ -44,9 +44,9 @@ const PastContestCard = ({ contest }) => {
         {Math.floor(contest.duration / 60)}h {contest.duration % 60}m
       </td>
       <td className="p-3 sm:p-4 w-[15%] text-center font-semibold">
-        {contest.video_tutorial ? (
+        {contest.youtube_tutorial ? (
           <a
-            href={contest.video_tutorial}
+            href={contest.youtube_tutorial}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"
