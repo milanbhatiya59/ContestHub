@@ -10,8 +10,10 @@
   - Backend: [https://contesthubapi.onrender.com/](https://contesthubapi.onrender.com/)  
   > **Note:** The first visit to these links may take some time or shows 502 Error as the app is hosted on Render, which shuts down apps on no activity Please wait some time.
 
-- **Video Proof:**  
-  *Link to video proof to be updated.*
+- **Video Proof:**
+  - https://github.com/user-attachments/assets/fa29824a-216b-4458-9781-def6c9a814f3
+
+  
 
 
 ## Project Overview
