@@ -15,7 +15,6 @@ const VideoTab = () => {
       setError(null);
       try {
         const fetchedVideos = await getPlaylistVideos(selectedPlaylist);
-        // Ensure proper mapping to expected structure
         const formattedVideos = fetchedVideos.map((video) => ({
           id: video.id,
           title: video.snippet?.title || "Untitled Video",
@@ -42,7 +41,6 @@ const VideoTab = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* Playlist Selection Buttons */}
       <div className="flex space-x-2 mb-4">
         {playlists.map((playlist) => (
           <button
@@ -59,7 +57,6 @@ const VideoTab = () => {
         ))}
       </div>
 
-      {/* Loading & Error States */}
       {loading ? (
         <p className="text-center text-gray-900 dark:text-white">
           Loading videos...

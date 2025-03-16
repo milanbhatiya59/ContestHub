@@ -11,7 +11,6 @@ function App() {
     <div className="bg-gray-300 dark:bg-gray-700 min-h-screen transition-colors duration-300">
       <Navbar />
       <div className="p-6 max-w-7xl mx-auto">
-        {/* Tab Buttons */}
         <div className="flex justify-center space-x-4 mb-6">
           <button
             className={`px-5 py-2 rounded-lg text-lg font-semibold shadow-md transition-all duration-300 ${
@@ -34,8 +33,6 @@ function App() {
             Tutorial Videos
           </button>
         </div>
-
-        {/* Content */}
         <div>{activeTab === "contests" ? <ContestTab /> : <VideoTab />}</div>
       </div>
     </div>
