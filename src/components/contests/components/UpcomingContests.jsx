@@ -39,7 +39,6 @@ const UpcomingContests = () => {
         );
         setBookmarkedContests(storedBookmarks);
       } catch (err) {
-        console.error("Error fetching contests:", err);
       } finally {
         setLoading(false);
       }

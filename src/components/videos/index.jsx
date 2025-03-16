@@ -15,8 +15,6 @@ const VideoTab = () => {
       setError(null);
       try {
         const fetchedVideos = await getPlaylistVideos(selectedPlaylist);
-        console.log("Fetched Videos:", fetchedVideos);
-
         // Ensure proper mapping to expected structure
         const formattedVideos = fetchedVideos.map((video) => ({
           id: video.id,
@@ -33,7 +31,6 @@ const VideoTab = () => {
 
         setVideos(formattedVideos);
       } catch (err) {
-        console.error("Error fetching videos:", err);
         setError("Failed to load videos. Please try again.");
       } finally {
         setLoading(false);
