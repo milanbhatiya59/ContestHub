@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import UpcomingContestCard from "./UpcomingContestCard";
-import { getUpcomingContests } from "../api/upcomingContestsApi";
+import { getUpcomingContests } from "../../../api/upcomingContestsApi";
 import { SiCodeforces, SiCodechef, SiLeetcode } from "react-icons/si";
 
 const platformIcons = {
@@ -15,30 +15,11 @@ const platformIcons = {
   ),
 };
 
-const SkeletonLoader = () => (
-  <tbody>
-    {[...Array(3)].map((_, index) => (
-      <tr
-        key={index}
-        className="border-b border-gray-300 dark:border-gray-600 animate-pulse"
-      >
-        {Array(4)
-          .fill()
-          .map((_, idx) => (
-            <td key={idx} className="p-3 sm:p-4">
-              <div className="w-full h-6 bg-gray-300 dark:bg-gray-700 rounded"></div>
-            </td>
-          ))}
-      </tr>
-    ))}
-  </tbody>
-);
-
 const UpcomingContests = () => {
   const [contests, setContests] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [bookmarkedContests, setBookmarkedContests] = useState(new Set());
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUpcomingContests = async () => {
@@ -46,13 +27,19 @@ const UpcomingContests = () => {
         const contestData = await getUpcomingContests();
         setContests(contestData);
 
-        // Extract unique platforms and set all selected by default
+        // Extract unique platforms
         const uniquePlatforms = [
           ...new Set(contestData.map((contest) => contest.platform)),
         ];
         setSelectedPlatforms(uniquePlatforms);
+
+        // Load bookmarked contests from local storage
+        const storedBookmarks = new Set(
+          JSON.parse(localStorage.getItem("bookmarkedContests")) || []
+        );
+        setBookmarkedContests(storedBookmarks);
       } catch (err) {
-        setError(err.message);
+        console.error("Error fetching contests:", err);
       } finally {
         setLoading(false);
       }
@@ -61,6 +48,20 @@ const UpcomingContests = () => {
     fetchUpcomingContests();
   }, []);
 
+  const toggleBookmark = (contestId) => {
+    const updatedBookmarks = new Set(bookmarkedContests);
+    if (updatedBookmarks.has(contestId)) {
+      updatedBookmarks.delete(contestId);
+    } else {
+      updatedBookmarks.add(contestId);
+    }
+    setBookmarkedContests(updatedBookmarks);
+    localStorage.setItem(
+      "bookmarkedContests",
+      JSON.stringify([...updatedBookmarks])
+    );
+  };
+
   const handlePlatformChange = (platform) => {
     setSelectedPlatforms((prev) =>
       prev.includes(platform)
@@ -68,9 +69,6 @@ const UpcomingContests = () => {
         : [...prev, platform]
     );
   };
-
-  if (error)
-    return <div className="text-red-500 text-center">Error: {error}</div>;
 
   const filteredContests = contests.filter((contest) =>
     selectedPlatforms.includes(contest.platform)
@@ -84,6 +82,7 @@ const UpcomingContests = () => {
           Upcoming Contests
         </h1>
 
+        {/* Platform Filter */}
         <div className="space-y-1">
           <h1 className="text-sm flex items-center ml-2 font-bold text-gray-900 dark:text-white">
             Filter
@@ -115,43 +114,48 @@ const UpcomingContests = () => {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Contests Table */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-lg">
           <thead className="bg-gray-300 dark:bg-gray-700 text-left">
             <tr>
-              <th className="p-3 sm:p-4 w-[40%]">Name</th>
+              <th className="p-3 sm:p-4 w-[35%]">Name</th>
               <th className="p-3 sm:p-4 w-[20%]">Start Time</th>
               <th className="p-3 sm:p-4 w-[15%] text-center">Duration</th>
               <th className="p-3 sm:p-4 w-[15%] text-center">Time Remaining</th>
+              <th className="p-3 sm:p-4 w-[10%] text-center">Bookmark</th>
             </tr>
           </thead>
-          {loading ? (
-            <SkeletonLoader />
-          ) : (
-            <tbody>
-              {filteredContests.length > 0 ? (
-                filteredContests.map((contest, index) => (
-                  <UpcomingContestCard
-                    key={index}
-                    platform={contest.platform}
-                    name={contest.name}
-                    start_time={contest.start_time}
-                    duration={contest.duration}
-                  />
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="4"
-                    className="text-center p-6 text-gray-500 dark:text-gray-400"
-                  >
-                    No contests available for the selected platforms.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          )}
+          <tbody>
+            {loading ? (
+              <tr>
+                <td
+                  colSpan="5"
+                  className="text-center p-6 text-gray-500 dark:text-gray-400"
+                >
+                  Loading...
+                </td>
+              </tr>
+            ) : filteredContests.length > 0 ? (
+              filteredContests.map((contest) => (
+                <UpcomingContestCard
+                  key={contest._id}
+                  contest={contest}
+                  isBookmarked={bookmarkedContests.has(contest._id)}
+                  onToggleBookmark={toggleBookmark}
+                />
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="5"
+                  className="text-center p-6 text-gray-500 dark:text-gray-400"
+                >
+                  No contests available.
+                </td>
+              </tr>
+            )}
+          </tbody>
         </table>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getPastContests } from "../api/pastContestsApi";
+import { getPastContests } from "../../../api/pastContestsApi";
 import { SiCodeforces, SiCodechef, SiLeetcode } from "react-icons/si";
 import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
 import PastContestCard from "./PastContestCard";
@@ -47,7 +47,6 @@ const PastContests = () => {
     const fetchPastContests = async () => {
       try {
         const contestData = await getPastContests();
-        console.log(contestData);
         setContests(contestData);
         const uniquePlatforms = [
           ...new Set(contestData.map((contest) => contest.platform)),
