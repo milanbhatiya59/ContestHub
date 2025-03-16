@@ -15,6 +15,25 @@ const platformIcons = {
   ),
 };
 
+const SkeletonLoader = () => (
+  <tbody>
+    {[...Array(3)].map((_, index) => (
+      <tr
+        key={index}
+        className="border-b border-gray-300 dark:border-gray-600 animate-pulse"
+      >
+        {Array(5)
+          .fill()
+          .map((_, idx) => (
+            <td key={idx} className="p-3 sm:p-4">
+              <div className="w-full h-6 bg-gray-300 dark:bg-gray-700 rounded"></div>
+            </td>
+          ))}
+      </tr>
+    ))}
+  </tbody>
+);
+
 const UpcomingContests = () => {
   const [contests, setContests] = useState([]);
   const [bookmarkedContests, setBookmarkedContests] = useState(new Set());
@@ -27,13 +46,11 @@ const UpcomingContests = () => {
         const contestData = await getUpcomingContests();
         setContests(contestData);
 
-        // Extract unique platforms
         const uniquePlatforms = [
           ...new Set(contestData.map((contest) => contest.platform)),
         ];
         setSelectedPlatforms(uniquePlatforms);
 
-        // Load bookmarked contests from local storage
         const storedBookmarks = new Set(
           JSON.parse(localStorage.getItem("bookmarkedContests")) || []
         );
@@ -75,13 +92,11 @@ const UpcomingContests = () => {
 
   return (
     <div className="w-full p-6">
-      {/* Header with Filters */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Upcoming Contests
         </h1>
 
-        {/* Platform Filter */}
         <div className="space-y-1">
           <h1 className="text-sm flex items-center ml-2 font-bold text-gray-900 dark:text-white">
             Filter
@@ -113,7 +128,6 @@ const UpcomingContests = () => {
         </div>
       </div>
 
-      {/* Contests Table */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white shadow-md rounded-lg">
           <thead className="bg-gray-300 dark:bg-gray-700 text-left">
@@ -125,36 +139,31 @@ const UpcomingContests = () => {
               <th className="p-3 sm:p-4 w-[10%] text-center">Bookmark</th>
             </tr>
           </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="text-center p-6 text-gray-500 dark:text-gray-400"
-                >
-                  Loading...
-                </td>
-              </tr>
-            ) : filteredContests.length > 0 ? (
-              filteredContests.map((contest) => (
-                <UpcomingContestCard
-                  key={contest._id}
-                  contest={contest}
-                  isBookmarked={bookmarkedContests.has(contest._id)}
-                  onToggleBookmark={toggleBookmark}
-                />
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="text-center p-6 text-gray-500 dark:text-gray-400"
-                >
-                  No contests available.
-                </td>
-              </tr>
-            )}
-          </tbody>
+          {loading ? (
+            <SkeletonLoader />
+          ) : (
+            <tbody>
+              {filteredContests.length > 0 ? (
+                filteredContests.map((contest) => (
+                  <UpcomingContestCard
+                    key={contest._id}
+                    contest={contest}
+                    isBookmarked={bookmarkedContests.has(contest._id)}
+                    onToggleBookmark={toggleBookmark}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="text-center p-6 text-gray-500 dark:text-gray-400"
+                  >
+                    No contests available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          )}
         </table>
       </div>
     </div>
